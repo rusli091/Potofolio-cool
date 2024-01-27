@@ -291,28 +291,43 @@
 
 <!-- custom js -->
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const contactForm = document.getElementById('contactForm');
-    const messageTableBody = document.querySelector('#messageTable tbody');
+    document.addEventListener('DOMContentLoaded', function () {
+        const contactForm = document.getElementById('contactForm');
+        const messageTableBody = document.querySelector('#messageTable tbody');
 
-    contactForm.addEventListener('submit', function (event) {
-        event.preventDefault();
+        // Load existing messages from local storage
+        const storedMessages = JSON.parse(localStorage.getItem('messages')) || [];
+        storedMessages.forEach(message => appendMessageToTable(message));
 
-        // Get form values
-        const fullName = document.getElementById('fullName').value;
-        const message = document.getElementById('message').value;
+        contactForm.addEventListener('submit', function (event) {
+            event.preventDefault();
 
-        // Create a new table row for the message with muted background
-        const newRow = messageTableBody.insertRow();
-        newRow.innerHTML = `<td class="text-center muted-background">${message}</td>
-                            <td class="text-center muted-background">${fullName}</td>`;
+            // Get form values
+            const fullName = document.getElementById('fullName').value;
+            const message = document.getElementById('message').value;
 
-        // Clear the form fields
-        contactForm.reset();
+            // Create a new table row for the message with muted background
+            const newRow = messageTableBody.insertRow();
+            newRow.innerHTML = `<td class="text-center muted-background">${message}</td>
+                                <td class="text-center muted-background">${fullName}</td>`;
+
+            // Save message to local storage
+            const newMessage = { fullName, message };
+            storedMessages.push(newMessage);
+            localStorage.setItem('messages', JSON.stringify(storedMessages));
+
+            // Clear the form fields
+            contactForm.reset();
+        });
+
+        // Function to append a message to the table
+        function appendMessageToTable(message) {
+            const newRow = messageTableBody.insertRow();
+            newRow.innerHTML = `<td class="text-center muted-background">${message.message}</td>
+                                <td class="text-center muted-background">${message.fullName}</td>`;
+        }
     });
-});
 </script>
-
 <style>
 #messageTableContainer {
     margin-top: 20px;
